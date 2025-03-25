@@ -4,7 +4,6 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { BarChart3, Home, LayoutDashboard, LogOut, Settings, ShieldCheck, Users } from "lucide-react"
 import { signOut, useSession } from "next-auth/react"
-import { Button } from "@/components/ui/button"
 import {
   Sidebar,
   SidebarContent,
@@ -14,9 +13,10 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarProvider,
-  SidebarSeparator,
   SidebarTrigger,
+  SidebarSeparator,
 } from "@/components/ui/sidebar"
+import { Button } from "@/components/ui/button"
 
 export function DashboardSidebar() {
   const pathname = usePathname()
@@ -62,6 +62,7 @@ export function DashboardSidebar() {
   return (
     <SidebarProvider defaultOpen={true}>
       <Sidebar className="border-r border-border" collapsible="icon">
+        {/* Sidebar Header */}
         <SidebarHeader className="flex items-center px-4 py-2">
           <div className="flex items-center gap-2">
             <div className="flex items-center justify-center w-8 h-8 rounded-full bg-background border border-border">
@@ -71,14 +72,16 @@ export function DashboardSidebar() {
           </div>
           <SidebarTrigger className="ml-auto md:flex" />
         </SidebarHeader>
-        <SidebarContent className="px-2">
+
+        {/* Sidebar Content */}
+        <SidebarContent className="px-2 overflow-y-auto">
           <SidebarMenu>
             {menuItems.map((item) => (
               <SidebarMenuItem key={item.href}>
                 <SidebarMenuButton
                   asChild
                   isActive={pathname === item.href}
-                  className={pathname === item.href ? "bg-accent" : ""}
+                  className={pathname === item.href ? "bg-accent text-accent-foreground" : "text-foreground hover:bg-accent/50"}
                   tooltip={item.title}
                 >
                   <Link href={item.href} className="flex items-center gap-3">
@@ -90,6 +93,7 @@ export function DashboardSidebar() {
             ))}
           </SidebarMenu>
 
+          {/* Admin Section */}
           {isAdmin && (
             <>
               <div className="mt-6 mb-2">
@@ -101,7 +105,7 @@ export function DashboardSidebar() {
                     <SidebarMenuButton
                       asChild
                       isActive={pathname === item.href}
-                      className={pathname === item.href ? "bg-accent" : ""}
+                      className={pathname === item.href ? "bg-accent text-accent-foreground" : "text-foreground hover:bg-accent/50"}
                       tooltip={item.title}
                     >
                       <Link href={item.href} className="flex items-center gap-3">
@@ -115,12 +119,14 @@ export function DashboardSidebar() {
             </>
           )}
         </SidebarContent>
+
+        {/* Sidebar Footer */}
         <SidebarFooter>
           <SidebarSeparator />
           <div className="p-2">
             <Button variant="ghost" className="w-full justify-start" onClick={() => signOut({ callbackUrl: "/" })}>
               <LogOut className="w-4 h-4 mr-2" />
-              <span>Sign out</span>
+              Sign out
             </Button>
           </div>
         </SidebarFooter>
@@ -128,4 +134,3 @@ export function DashboardSidebar() {
     </SidebarProvider>
   )
 }
-

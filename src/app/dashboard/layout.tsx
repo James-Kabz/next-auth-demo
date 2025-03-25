@@ -32,15 +32,14 @@ export default function DashboardLayout({
   return (
     <div className="flex h-screen bg-background">
       <DashboardSidebar />
-      <SidebarInset className="flex-1 flex flex-col ">
+      <SidebarInset className="flex-1 flex min-w-full flex-col">
         <header className="flex items-center justify-between h-16 px-4 sm:px-6 border-b">
           <div className="font-semibold">Dashboard</div>
           <UserNav user={session?.user} />
         </header>
-        <main className="flex-1 overflow-auto">
-          <div className="container mx-auto p-4 sm:p-6 xl:max-w-7xl 2xl:max-w-[1400px]">{children}</div>
-        </main>
+        <main className="flex-1 overflow-auto p-5">{children}</main>
       </SidebarInset>
+
     </div>
   )
 }

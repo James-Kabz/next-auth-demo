@@ -5,8 +5,8 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 export default function DashboardPage() {
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
+      <div className="grid auto-rows-min gap-4 md:grid-cols-3">
         <h1 className="text-2xl font-bold">Dashboard</h1>
         <Tabs defaultValue="overview" className="w-full sm:w-auto">
           <TabsList className="w-full sm:w-auto grid grid-cols-4 sm:flex">
@@ -18,7 +18,7 @@ export default function DashboardPage() {
         </Tabs>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 w-full">
         <Card className="bg-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Users</CardTitle>
@@ -107,7 +107,7 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-7 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-7 gap-4 w-full">
         <Card className="lg:col-span-2 xl:col-span-4 bg-card">
           <CardHeader>
             <CardTitle>Overview</CardTitle>
