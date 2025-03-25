@@ -1,12 +1,26 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+"use client"
 
-const activities = [
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { useEffect, useState } from "react"
+
+interface Activity {
+  id: number
+  user: {
+    name: string
+    email: string
+    initials: string
+  }
+  action: string
+  timestamp: string
+}
+
+const sampleActivities = [
   {
     id: 1,
     user: {
       name: "John Doe",
       email: "john@example.com",
-      avatar: "/placeholder.svg?height=32&width=32",
+      initials: "JD",
     },
     action: "signed in",
     timestamp: "2 minutes ago",
@@ -16,7 +30,7 @@ const activities = [
     user: {
       name: "Jane Smith",
       email: "jane@example.com",
-      avatar: "/placeholder.svg?height=32&width=32",
+      initials: "JS",
     },
     action: "updated their profile",
     timestamp: "1 hour ago",
@@ -26,7 +40,7 @@ const activities = [
     user: {
       name: "Bob Johnson",
       email: "bob@example.com",
-      avatar: "/placeholder.svg?height=32&width=32",
+      initials: "BJ",
     },
     action: "changed their password",
     timestamp: "3 hours ago",
@@ -36,7 +50,7 @@ const activities = [
     user: {
       name: "Alice Williams",
       email: "alice@example.com",
-      avatar: "/placeholder.svg?height=32&width=32",
+      initials: "AW",
     },
     action: "signed up",
     timestamp: "5 hours ago",
@@ -46,7 +60,7 @@ const activities = [
     user: {
       name: "Charlie Brown",
       email: "charlie@example.com",
-      avatar: "/placeholder.svg?height=32&width=32",
+      initials: "CB",
     },
     action: "signed in",
     timestamp: "1 day ago",
@@ -54,26 +68,30 @@ const activities = [
 ]
 
 export function RecentActivity() {
+  const [activities, setActivities] = useState<Activity[]>([])
+
+  useEffect(() => {
+    setActivities(sampleActivities)
+  }, [])
+
   return (
-    <div className="space-y-8">
-      {activities.map((activity) => (
-        <div className="flex items-center" key={activity.id}>
-          <Avatar className="h-9 w-9">
-            <AvatarImage src={activity.user.avatar} alt={activity.user.name} />
-            <AvatarFallback>
-              {activity.user.name
-                .split(" ")
-                .map((n) => n[0])
-                .join("")}
-            </AvatarFallback>
-          </Avatar>
-          <div className="ml-4 space-y-1">
-            <p className="text-sm font-medium leading-none">{activity.user.name}</p>
-            <p className="text-sm text-muted-foreground">{activity.action}</p>
+    <div className="space-y-6">
+      {activities.length === 0 ? (
+        <div className="text-center py-4 text-muted-foreground">Loading activities...</div>
+      ) : (
+        activities.map((activity) => (
+          <div className="flex items-center" key={activity.id}>
+            <Avatar className="h-9 w-9 border border-border">
+              <AvatarFallback>{activity.user.initials}</AvatarFallback>
+            </Avatar>
+            <div className="ml-4 space-y-1">
+              <p className="text-sm font-medium leading-none">{activity.user.name}</p>
+              <p className="text-sm text-muted-foreground">{activity.action}</p>
+            </div>
+            <div className="ml-auto text-sm text-muted-foreground">{activity.timestamp}</div>
           </div>
-          <div className="ml-auto text-sm text-muted-foreground">{activity.timestamp}</div>
-        </div>
-      ))}
+        ))
+      )}
     </div>
   )
 }

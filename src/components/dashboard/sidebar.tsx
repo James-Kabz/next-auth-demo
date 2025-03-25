@@ -13,8 +13,8 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarProvider,
   SidebarSeparator,
-  SidebarTrigger,
 } from "@/components/ui/sidebar"
 
 export function DashboardSidebar() {
@@ -59,62 +59,69 @@ export function DashboardSidebar() {
   ]
 
   return (
-    <Sidebar>
-      <SidebarHeader className="flex items-center px-4 py-2">
-        <div className="flex items-center gap-2">
-          <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary">
-            <span className="text-sm font-bold text-primary-foreground">A</span>
-          </div>
-          <div className="font-semibold">Auth Template</div>
-        </div>
-        <SidebarTrigger className="ml-auto md:hidden" />
-      </SidebarHeader>
-      <SidebarSeparator />
-      <SidebarContent>
-        <SidebarMenu>
-          {menuItems.map((item) => (
-            <SidebarMenuItem key={item.href}>
-              <SidebarMenuButton asChild isActive={pathname === item.href} tooltip={item.title}>
-                <Link href={item.href}>
-                  <item.icon className="w-5 h-5" />
-                  <span>{item.title}</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
-        </SidebarMenu>
-
-        {isAdmin && (
-          <>
-            <SidebarSeparator />
-            <div className="px-4 py-2">
-              <h4 className="text-xs font-semibold text-muted-foreground">Admin</h4>
+    <SidebarProvider defaultOpen={true}>
+      <Sidebar className="border-r border-border">
+        <SidebarHeader className="flex items-center px-4 py-2">
+          <div className="flex items-center gap-2">
+            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-background border border-border">
+              <span className="text-sm font-bold text-foreground">A</span>
             </div>
-            <SidebarMenu>
-              {adminItems.map((item) => (
-                <SidebarMenuItem key={item.href}>
-                  <SidebarMenuButton asChild isActive={pathname === item.href} tooltip={item.title}>
-                    <Link href={item.href}>
-                      <item.icon className="w-5 h-5" />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </>
-        )}
-      </SidebarContent>
-      <SidebarFooter>
-        <SidebarSeparator />
-        <div className="p-2">
-          <Button variant="outline" className="w-full justify-start" onClick={() => signOut({ callbackUrl: "/" })}>
-            <LogOut className="w-4 h-4 mr-2" />
-            Sign out
-          </Button>
-        </div>
-      </SidebarFooter>
-    </Sidebar>
+            <div className="font-semibold">Auth Template</div>
+          </div>
+        </SidebarHeader>
+        <SidebarContent className="px-2">
+          <SidebarMenu>
+            {menuItems.map((item) => (
+              <SidebarMenuItem key={item.href}>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname === item.href}
+                  className={pathname === item.href ? "bg-accent" : ""}
+                >
+                  <Link href={item.href} className="flex items-center gap-3">
+                    <item.icon className="w-5 h-5" />
+                    <span>{item.title}</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
+
+          {isAdmin && (
+            <>
+              <div className="mt-6 mb-2">
+                <h4 className="px-3 text-xs font-semibold text-muted-foreground">Admin</h4>
+              </div>
+              <SidebarMenu>
+                {adminItems.map((item) => (
+                  <SidebarMenuItem key={item.href}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={pathname === item.href}
+                      className={pathname === item.href ? "bg-accent" : ""}
+                    >
+                      <Link href={item.href} className="flex items-center gap-3">
+                        <item.icon className="w-5 h-5" />
+                        <span>{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </>
+          )}
+        </SidebarContent>
+        <SidebarFooter>
+          <SidebarSeparator />
+          <div className="p-2">
+            <Button variant="ghost" className="w-full justify-start" onClick={() => signOut({ callbackUrl: "/" })}>
+              <LogOut className="w-4 h-4 mr-2" />
+              Sign out
+            </Button>
+          </div>
+        </SidebarFooter>
+      </Sidebar>
+    </SidebarProvider>
   )
 }
 
