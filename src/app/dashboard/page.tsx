@@ -1,21 +1,24 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Overview } from "@/components/dashboard/overview"
 import { RecentActivity } from "@/components/dashboard/recent-activity"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 export default function DashboardPage() {
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex justify-between items-center">
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h1 className="text-2xl font-bold">Dashboard</h1>
-        <div className="flex space-x-1 bg-accent rounded-lg p-1">
-          <button className="px-4 py-1.5 text-sm font-medium rounded-md bg-background">Overview</button>
-          <button className="px-4 py-1.5 text-sm font-medium rounded-md text-muted-foreground">Analytics</button>
-          <button className="px-4 py-1.5 text-sm font-medium rounded-md text-muted-foreground">Reports</button>
-          <button className="px-4 py-1.5 text-sm font-medium rounded-md text-muted-foreground">Settings</button>
-        </div>
+        <Tabs defaultValue="overview" className="w-full sm:w-auto">
+          <TabsList className="w-full sm:w-auto grid grid-cols-4 sm:flex">
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="analytics">Analytics</TabsTrigger>
+            <TabsTrigger value="reports">Reports</TabsTrigger>
+            <TabsTrigger value="settings">Settings</TabsTrigger>
+          </TabsList>
+        </Tabs>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         <Card className="bg-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Users</CardTitle>
@@ -104,17 +107,17 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
       </div>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <Card className="col-span-4 bg-card">
+      <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-7 gap-4">
+        <Card className="lg:col-span-2 xl:col-span-4 bg-card">
           <CardHeader>
             <CardTitle>Overview</CardTitle>
             <CardDescription>User activity for the past 30 days.</CardDescription>
           </CardHeader>
-          <CardContent className="pl-2">
+          <CardContent>
             <Overview />
           </CardContent>
         </Card>
-        <Card className="col-span-3 bg-card">
+        <Card className="lg:col-span-1 xl:col-span-3 bg-card">
           <CardHeader>
             <CardTitle>Recent Activity</CardTitle>
             <CardDescription>Latest user actions and events.</CardDescription>

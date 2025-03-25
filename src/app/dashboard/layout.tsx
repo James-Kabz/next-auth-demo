@@ -30,14 +30,16 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-background">
+    <div className="flex h-screen bg-background">
       <DashboardSidebar />
-      <SidebarInset className="w-full">
-        <header className="sticky top-0 z-10 flex items-center justify-between h-16 px-4 md:px-6 border-b bg-background">
+      <SidebarInset className="flex-1 flex flex-col ">
+        <header className="flex items-center justify-between h-16 px-4 sm:px-6 border-b">
           <div className="font-semibold">Dashboard</div>
           <UserNav user={session?.user} />
         </header>
-        <main className="p-4 md:p-6">{children}</main>
+        <main className="flex-1 overflow-auto">
+          <div className="container mx-auto p-4 sm:p-6 xl:max-w-7xl 2xl:max-w-[1400px]">{children}</div>
+        </main>
       </SidebarInset>
     </div>
   )
