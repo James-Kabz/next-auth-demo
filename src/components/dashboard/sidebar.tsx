@@ -2,18 +2,19 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { BarChart3, Home, LayoutDashboard, LogOut, Settings, ShieldCheck, Users } from "lucide-react"
-import { signOut } from "next-auth/react"
+import { BarChart3, LayoutDashboard, ShieldCheck, UserCheck, Users } from "lucide-react"
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  // useSidebar,
 } from "@/components/ui/sidebar"
-import { Button } from "@/components/ui/button"
+
+// Import the custom components
+import { DashboardSidebarHeader } from "@/components/dashboard/sidebar-header"
+import { DashboardSidebarFooter } from "@/components/dashboard/sidebar-footer"
 
 interface Props {
   user: {
@@ -24,8 +25,11 @@ interface Props {
     image?: string | null
   }
 }
-export function DashboardSidebar({user} : Props) {
-  const pathname = usePathname();
+
+export function DashboardSidebar({ user }: Props) {
+  const pathname = usePathname()
+  // const { state } = useSidebar()
+  // const isCollapsed = state === "collapsed"
 
   const isAdmin = user?.role === "admin"
 
@@ -40,14 +44,14 @@ export function DashboardSidebar({user} : Props) {
       href: "/dashboard/analytics",
       icon: BarChart3,
     },
-    {
-      title: "Settings",
-      href: "/dashboard/settings",
-      icon: Settings,
-    },
   ]
 
   const adminRoutes = [
+    {
+      title: "Admin ",
+      href: "",
+      icon: UserCheck,
+    },
     {
       title: "Users",
       href: "/dashboard/users",
@@ -61,18 +65,13 @@ export function DashboardSidebar({user} : Props) {
   ]
 
   return (
-    <Sidebar>
-      <SidebarHeader>
-        <div className="flex items-center gap-2 px-4 py-2">
-          <Home className="h-6 w-6" />
-          <span className="font-bold">Auth System</span>
-        </div>
-      </SidebarHeader>
+    <Sidebar collapsible="icon">
+      <DashboardSidebarHeader />
       <SidebarContent>
         <SidebarMenu>
           {routes.map((route) => (
             <SidebarMenuItem key={route.href}>
-              <SidebarMenuButton asChild isActive={pathname === route.href}>
+              <SidebarMenuButton asChild isActive={pathname === route.href} tooltip={route.title}>
                 <Link href={route.href}>
                   <route.icon className="h-5 w-5" />
                   <span>{route.title}</span>
@@ -82,10 +81,10 @@ export function DashboardSidebar({user} : Props) {
           ))}
 
           {isAdmin && (
-            <>
+            <div className="mt-28">
               {adminRoutes.map((route) => (
                 <SidebarMenuItem key={route.href}>
-                  <SidebarMenuButton asChild isActive={pathname === route.href}>
+                  <SidebarMenuButton asChild isActive={pathname === route.href} tooltip={route.title}>
                     <Link href={route.href}>
                       <route.icon className="h-5 w-5" />
                       <span>{route.title}</span>
@@ -93,16 +92,11 @@ export function DashboardSidebar({user} : Props) {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
-            </>
+            </div>
           )}
         </SidebarMenu>
       </SidebarContent>
-      <SidebarFooter>
-        <Button variant="ghost" className="w-full justify-start" onClick={() => signOut({ callbackUrl: "/" })}>
-          <LogOut className="mr-2 h-5 w-5" />
-          Sign Out
-        </Button>
-      </SidebarFooter>
+      <DashboardSidebarFooter />
     </Sidebar>
   )
 }

@@ -2,8 +2,8 @@
 import Link from "next/link";
 import { Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { SidebarTrigger } from "@/components/ui/sidebar";
 import { UserNav } from "@/components/dashboard/user-nav";
+import { SidebarTrigger } from "../ui/sidebar";
 
 interface Props {
   user: {
@@ -20,7 +20,7 @@ export function DashboardHeader({ user }: Props) {
     <header className="border-b bg-background">
       <div className="container flex h-16 items-right justify-between py-4">
         <div className="flex items-center gap-2 md:gap-4">
-          <SidebarTrigger />
+            <SidebarTrigger/>
           <Link href="/dashboard" className="flex items-center gap-2">
             <span className="hidden font-bold md:inline-block">Auth System</span>
           </Link>
