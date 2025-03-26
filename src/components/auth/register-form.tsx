@@ -53,11 +53,11 @@ export function RegisterForm() {
     if (!response.ok) {
       const { error } = await response.json()
       return toast.error(error instanceof Error ? error.message : "An unexpected error occurred");
+    } else {
+      toast.success("Account Created Successfully!");
+
+      router.push("/login")
     }
-
-    toast.success("Account Created Successfully!");
-
-    router.push("/login")
   }
 
   return (
