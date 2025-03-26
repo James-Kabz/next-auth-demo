@@ -46,10 +46,11 @@ export function LoginForm() {
 
     if (!signInResult?.ok) {
       return toast.error("Invalid email or password");
+    }else {
+      toast.success("Login successful!");
+      router.refresh()
+      router.push("/dashboard")
     }
-
-    router.refresh()
-    router.push("/dashboard")
   }
 
   const handleGoogleSignIn = async () => {
