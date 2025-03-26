@@ -11,9 +11,9 @@ export function DashboardSidebarHeader() {
 
   return (
     <SidebarHeader>
-      <div className={cn("flex  items-center", isCollapsed && "")}>
+      <div className={cn("flex items-center gap-1", isCollapsed && "")}>
         <Home className="h-5 w-5 flex-shrink-0" />
-        {!isCollapsed && <span className="font-bold text-lg">Auth System</span>}
+        {!isCollapsed && <span className="font-bold text-base">Auth System</span>}
       </div>
     </SidebarHeader>
   )
