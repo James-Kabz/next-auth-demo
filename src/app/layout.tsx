@@ -1,15 +1,16 @@
 import type React from "react"
-import type { Metadata } from "next"
 import { Inter } from "next/font/google"
-import { SessionProvider } from "@/components/session-provider"
 import { ThemeProvider } from "@/components/theme-provider"
+import { AuthProvider } from "@/components/auth/auth-provider"
+
 import "./globals.css"
+import { Toaster } from "@/components/ui/sonner"
 
 const inter = Inter({ subsets: ["latin"] })
 
-export const metadata: Metadata = {
-  title: "Next.js Authentication Template",
-  description: "A complete authentication solution with Next-Auth, Prisma, and shadcn/ui components.",
+export const metadata = {
+  title: "Next.js Authentication",
+  description: "Next.js Authentication with Next-Auth, Prisma, and shadcn/ui",
 }
 
 export default function RootLayout({
@@ -18,13 +19,14 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" suppressHydrationWarning className="dark">
+    <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-        <SessionProvider>
-          <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} disableTransitionOnChange>
+        <AuthProvider>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
             {children}
+            <Toaster />
           </ThemeProvider>
-        </SessionProvider>
+        </AuthProvider>
       </body>
     </html>
   )

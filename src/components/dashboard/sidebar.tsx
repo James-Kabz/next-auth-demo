@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { BarChart3, Home, LayoutDashboard, LogOut, Settings, ShieldCheck, Users } from "lucide-react"
-import { signOut, useSession } from "next-auth/react"
+import { signOut } from "next-auth/react"
 import {
   Sidebar,
   SidebarContent,
@@ -12,27 +12,28 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarProvider,
-  SidebarTrigger,
-  SidebarSeparator,
 } from "@/components/ui/sidebar"
 import { Button } from "@/components/ui/button"
 
-export function DashboardSidebar() {
-  const pathname = usePathname()
-  const { data: session } = useSession()
-  const isAdmin = session?.user?.role === "admin"
+interface Props {
+  user: {
+    id?: string | null
+    role?: string | null
+    name?: string | null
+    email?: string | null
+    image?: string | null
+  }
+}
+export function DashboardSidebar({user} : Props) {
+  const pathname = usePathname();
 
-  const menuItems = [
+  const isAdmin = user?.role === "admin"
+
+  const routes = [
     {
       title: "Dashboard",
       href: "/dashboard",
       icon: LayoutDashboard,
-    },
-    {
-      title: "Home",
-      href: "/",
-      icon: Home,
     },
     {
       title: "Analytics",
@@ -46,91 +47,63 @@ export function DashboardSidebar() {
     },
   ]
 
-  const adminItems = [
+  const adminRoutes = [
     {
       title: "Users",
       href: "/dashboard/users",
       icon: Users,
     },
     {
-      title: "Permissions",
+      title: "Roles & Permissions",
       href: "/dashboard/permissions",
       icon: ShieldCheck,
     },
   ]
 
   return (
-    <SidebarProvider defaultOpen={true}>
-      <Sidebar className="border-r border-border" collapsible="icon">
-        {/* Sidebar Header */}
-        <SidebarHeader className="flex items-center px-4 py-2">
-          <div className="flex items-center gap-2">
-            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-background border border-border">
-              <span className="text-sm font-bold text-foreground">A</span>
-            </div>
-            <div className="font-semibold">Auth Template</div>
-          </div>
-          <SidebarTrigger className="ml-auto md:flex" />
-        </SidebarHeader>
+    <Sidebar>
+      <SidebarHeader>
+        <div className="flex items-center gap-2 px-4 py-2">
+          <Home className="h-6 w-6" />
+          <span className="font-bold">Auth System</span>
+        </div>
+      </SidebarHeader>
+      <SidebarContent>
+        <SidebarMenu>
+          {routes.map((route) => (
+            <SidebarMenuItem key={route.href}>
+              <SidebarMenuButton asChild isActive={pathname === route.href}>
+                <Link href={route.href}>
+                  <route.icon className="h-5 w-5" />
+                  <span>{route.title}</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          ))}
 
-        {/* Sidebar Content */}
-        <SidebarContent className="px-2 overflow-y-auto">
-          <SidebarMenu>
-            {menuItems.map((item) => (
-              <SidebarMenuItem key={item.href}>
-                <SidebarMenuButton
-                  asChild
-                  isActive={pathname === item.href}
-                  className={pathname === item.href ? "bg-accent text-accent-foreground" : "text-foreground hover:bg-accent/50"}
-                  tooltip={item.title}
-                >
-                  <Link href={item.href} className="flex items-center gap-3">
-                    <item.icon className="w-5 h-5" />
-                    <span>{item.title}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
-
-          {/* Admin Section */}
           {isAdmin && (
             <>
-              <div className="mt-6 mb-2">
-                <h4 className="px-3 text-xs font-semibold text-muted-foreground">Admin</h4>
-              </div>
-              <SidebarMenu>
-                {adminItems.map((item) => (
-                  <SidebarMenuItem key={item.href}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={pathname === item.href}
-                      className={pathname === item.href ? "bg-accent text-accent-foreground" : "text-foreground hover:bg-accent/50"}
-                      tooltip={item.title}
-                    >
-                      <Link href={item.href} className="flex items-center gap-3">
-                        <item.icon className="w-5 h-5" />
-                        <span>{item.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
+              {adminRoutes.map((route) => (
+                <SidebarMenuItem key={route.href}>
+                  <SidebarMenuButton asChild isActive={pathname === route.href}>
+                    <Link href={route.href}>
+                      <route.icon className="h-5 w-5" />
+                      <span>{route.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
             </>
           )}
-        </SidebarContent>
-
-        {/* Sidebar Footer */}
-        <SidebarFooter>
-          <SidebarSeparator />
-          <div className="p-2">
-            <Button variant="ghost" className="w-full justify-start" onClick={() => signOut({ callbackUrl: "/" })}>
-              <LogOut className="w-4 h-4 mr-2" />
-              Sign out
-            </Button>
-          </div>
-        </SidebarFooter>
-      </Sidebar>
-    </SidebarProvider>
+        </SidebarMenu>
+      </SidebarContent>
+      <SidebarFooter>
+        <Button variant="ghost" className="w-full justify-start" onClick={() => signOut({ callbackUrl: "/" })}>
+          <LogOut className="mr-2 h-5 w-5" />
+          Sign Out
+        </Button>
+      </SidebarFooter>
+    </Sidebar>
   )
 }
+
