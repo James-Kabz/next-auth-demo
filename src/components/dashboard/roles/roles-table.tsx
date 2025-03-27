@@ -4,8 +4,9 @@ import { useState, useEffect } from "react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Loader2, Plus } from "lucide-react"
+import { Loader2, Pencil, Plus } from "lucide-react"
 import { PermissionGate } from "@/components/auth/permission-gate"
+import Link from "next/link"
 
 interface Role {
   id: string
@@ -59,9 +60,11 @@ export function RolesTable() {
           <p className="text-sm text-muted-foreground">A list of all roles in your application</p>
         </div>
         <PermissionGate permission="roles:create">
-          <Button size="sm">
+          <Button size="sm" asChild>
+            <Link href="/dashboard/roles/add">
             <Plus className="mr-2 h-4 w-4" />
             Add Role
+            </Link>
           </Button>
         </PermissionGate>
       </div>
@@ -104,8 +107,11 @@ export function RolesTable() {
                   <TableCell>{role._count.users}</TableCell>
                   <TableCell className="text-right">
                     <PermissionGate permission="roles:update">
-                      <Button variant="ghost" size="sm">
-                        Edit
+                    <Button variant="ghost" size="sm" asChild>
+                        <Link href={`/dashboard/roles/${role.id}/edit`}>
+                          <Pencil className="mr-2 h-4 w-4" />
+                          Edit
+                        </Link>
                       </Button>
                     </PermissionGate>
                   </TableCell>

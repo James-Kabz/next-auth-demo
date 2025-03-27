@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { RolesTable } from "@/components/dashboard/roles-table"
+import { RolesTable } from "@/components/dashboard/roles/roles-table"
 import { PermissionsTable } from "@/components/dashboard/permissions-table"
 
 export default function PermissionsPage() {
