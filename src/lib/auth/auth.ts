@@ -50,11 +50,62 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
+    async signIn({ user, account }) {
+      // Only proceed for Google sign-ins
+      if (account?.provider === "google") {
+        try {
+          // Check if the user already exists in the database
+          const existingUser = await prisma.user.findUnique({
+            where: { email: user.email as string },
+            include: { role: true },
+          })
+
+          // If the user exists but doesn't have a role, assign the guest role
+          if (existingUser && !existingUser.roleId) {
+            // Find the guest role
+            const guestRole = await prisma.role.findUnique({
+              where: { name: "guest" },
+            })
+
+            // If guest role doesn't exist, try to create it
+            const roleId = guestRole?.id || (await createGuestRole())
+
+            if (roleId) {
+              // Update the user with the guest role
+              await prisma.user.update({
+                where: { id: existingUser.id },
+                data: { roleId },
+              })
+            }
+          }
+        } catch (error) {
+          console.error("Error assigning guest role:", error)
+        }
+      }
+      return true
+    },
     async jwt({ token, user }) {
       if (user) {
         token.role = user.role
         token.id = user.id
       }
+
+      // If no role is assigned yet, check the database for updates
+      if (!token.role && token.email) {
+        try {
+          const dbUser = await prisma.user.findUnique({
+            where: { email: token.email },
+            include: { role: true },
+          })
+
+          if (dbUser?.role) {
+            token.role = dbUser.role.name
+          }
+        } catch (error) {
+          console.error("Error fetching user role for token:", error)
+        }
+      }
+
       return token
     },
     async session({ session, token }) {
@@ -73,5 +124,50 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
   secret: process.env.NEXTAUTH_SECRET,
+}
+
+// Helper function to create a guest role if it doesn't exist
+async function createGuestRole() {
+  try {
+    // Check if guest role already exists
+    const existingRole = await prisma.role.findUnique({
+      where: { name: "guest" },
+    })
+
+    if (existingRole) {
+      return existingRole.id
+    }
+
+    // Create the guest role with basic permissions
+    const guestRole = await prisma.role.create({
+      data: {
+        name: "guest",
+        description: "Default role for new users with limited access",
+      },
+    })
+
+    // Assign basic permissions to the guest role
+    const basicPermissions = ["dashboard:access"]
+
+    for (const permissionName of basicPermissions) {
+      const permission = await prisma.permission.findUnique({
+        where: { name: permissionName },
+      })
+
+      if (permission) {
+        await prisma.rolePermission.create({
+          data: {
+            roleId: guestRole.id,
+            permissionId: permission.id,
+          },
+        })
+      }
+    }
+
+    return guestRole.id
+  } catch (error) {
+    console.error("Error creating guest role:", error)
+    return null
+  }
 }
 

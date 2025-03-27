@@ -23,9 +23,16 @@ export async function POST(request: Request) {
     }
 
     // Get the default user role
-    const userRole = await prisma.role.findUnique({
+    let userRole = await prisma.role.findUnique({
       where: { name: "user" },
     })
+
+    // If user role doesn't exist, try to use guest role as fallback
+    if (!userRole) {
+      userRole = await prisma.role.findUnique({
+        where: { name: "guest" },
+      })
+    }
 
     if (!userRole) {
       return NextResponse.json({ message: "Default user role not found" }, { status: 500 })

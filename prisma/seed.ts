@@ -58,6 +58,18 @@ async function main() {
     },
   })
 
+  // Add the guest role to the seed file after the moderator role
+  const guestRole = await prisma.role.upsert({
+    where: { name: "guest" },
+    update: {},
+    create: {
+      name: "guest",
+      description: "Default role for new users with limited access",
+    },
+  })
+
+  console.log("Created guest role")
+
   console.log("Created default roles")
 
   // Assign permissions to roles
@@ -132,16 +144,40 @@ async function main() {
     }
   }
 
+  // Add basic permissions for guest role
+  const guestPermissions = ["dashboard:access"]
+  for (const permissionName of guestPermissions) {
+    const permissionRecord = await prisma.permission.findUnique({
+      where: { name: permissionName },
+    })
+
+    if (permissionRecord) {
+      await prisma.rolePermission.upsert({
+        where: {
+          roleId_permissionId: {
+            roleId: guestRole.id,
+            permissionId: permissionRecord.id,
+          },
+        },
+        update: {},
+        create: {
+          roleId: guestRole.id,
+          permissionId: permissionRecord.id,
+        },
+      })
+    }
+  }
+
   console.log("Assigned permissions to roles")
 
   // Create a default admin user
-  const adminPassword = await bcrypt.hash("@kabz123", 10)
+  const adminPassword = await bcrypt.hash("admin123", 10)
   await prisma.user.upsert({
-    where: { email: "kabogp@gmail.com" },
+    where: { email: "admin@gmail.com" },
     update: {},
     create: {
-      name: "James Kabogo",
-      email: "kabogp@gmail.com",
+      name: "Dev Admin",
+      email: "dev@example.com",
       password: adminPassword,
       roleId: adminRole.id,
     },
