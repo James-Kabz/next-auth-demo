@@ -9,7 +9,7 @@ export async function middleware(request: NextRequest) {
   // Define protected routes
   const isProtectedRoute = request.nextUrl.pathname.startsWith("/dashboard")
   const isAuthRoute =
-    request.nextUrl.pathname.startsWith("/login") || request.nextUrl.pathname.startsWith("/auth/register")
+    request.nextUrl.pathname.startsWith("/login") || request.nextUrl.pathname.startsWith("/register")
 
   // Redirect authenticated users away from auth pages
   if (isAuthenticated && isAuthRoute) {
@@ -18,7 +18,19 @@ export async function middleware(request: NextRequest) {
 
   // Redirect unauthenticated users to login
   if (!isAuthenticated && isProtectedRoute) {
-    return NextResponse.redirect(new URL("/login", request.url))
+    return NextResponse.redirect(new URL("/unauthorized", request.url))
+  }
+
+  // Handle forbidden access (example: checking role-based access)
+  // This is just a placeholder - you would implement your actual permission logic
+  if (isAuthenticated && isProtectedRoute && request.nextUrl.pathname.startsWith("/dashboard")) {
+    const userRole = token.role as string 
+
+    // setting allowed roles
+    const allowedRoles = ["admin", "guest","user","moderator"];
+    if (!allowedRoles.includes(userRole)) {
+      return NextResponse.redirect(new URL("/forbidden", request.url))
+    }
   }
 
   return NextResponse.next()
@@ -26,6 +38,6 @@ export async function middleware(request: NextRequest) {
 
 // Specify which routes this middleware should run on
 export const config = {
-  matcher: ["/dashboard/:path*", "/login", "/register"],
+  matcher: ["/dashboard/:path*", "/login", "/register", "/unauthorized", "/forbidden"],
 }
 
