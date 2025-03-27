@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { RolesTable } from "@/components/dashboard/roles-table"
-import { PermissionsTable } from "@/components/dashboard/permissions-table"
+import { RolesTable } from "@/components/dashboard/roles/roles-table"
+import { PermissionsTable } from "@/components/dashboard/permissions/permissions-table"
 
 export default function PermissionsPage() {
   return (
@@ -11,22 +11,11 @@ export default function PermissionsPage() {
         <p className="text-muted-foreground">Manage roles and permissions for your application.</p>
       </div>
 
-      <Tabs defaultValue="roles" className="space-y-4">
+      <Tabs defaultValue="permissions" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="roles">Roles</TabsTrigger>
           <TabsTrigger value="permissions">Permissions</TabsTrigger>
+          <TabsTrigger value="roles">Roles</TabsTrigger>          
         </TabsList>
-        <TabsContent value="roles" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Roles</CardTitle>
-              <CardDescription>Manage user roles and their associated permissions.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <RolesTable />
-            </CardContent>
-          </Card>
-        </TabsContent>
         <TabsContent value="permissions" className="space-y-4">
           <Card>
             <CardHeader>
@@ -35,6 +24,18 @@ export default function PermissionsPage() {
             </CardHeader>
             <CardContent>
               <PermissionsTable />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="roles" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Roles</CardTitle>
+              <CardDescription>Manage user roles and their associated permissions.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <RolesTable />
             </CardContent>
           </Card>
         </TabsContent>
