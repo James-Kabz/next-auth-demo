@@ -1,4 +1,4 @@
-import { EditRoleForm } from "@/components/dashboard/roles/edit-role-form"
+import { AddPermissionForm } from "@/components/dashboard/permissions/add-permission-form"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 // import {
 //   Breadcrumb,
@@ -9,18 +9,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 // } from "@/components/ui/breadcrumb"
 // import { Home } from "lucide-react"
 // import Link from "next/link"
-import { getRoleById } from "@/lib/auth/role-service"
 
-interface EditRolePageProps {
-  params: {
-    id: string
-  }
-}
-
-export default async function EditRolePage({ params }: EditRolePageProps) {
-  const { id } = await params
-  const role = await getRoleById(id)
-  
+export default function AddPermissionPage() {
   return (
     <div className="space-y-6">
       {/* <Breadcrumb>
@@ -41,30 +31,25 @@ export default async function EditRolePage({ params }: EditRolePageProps) {
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <Link href="/dashboard/roles">Roles</Link>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbLink>Edit {role?.name}</BreadcrumbLink>
+            <BreadcrumbLink>Add Permission</BreadcrumbLink>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb> */}
 
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold tracking-tight">Edit Role: {role?.name}</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Add New Permission</h1>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Role Details</CardTitle>
+          <CardTitle>Permission Details</CardTitle>
           <CardDescription>
-            Update role details and manage its permissions. Changes will affect all users with this role.
+            Create a new permission that can be assigned to roles. Permissions define specific actions users can
+            perform.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <EditRoleForm roleId={id} />
+          <AddPermissionForm />
         </CardContent>
       </Card>
     </div>

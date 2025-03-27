@@ -9,8 +9,6 @@ import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-
-import { PermissionSelector } from "@/components/dashboard/roles/permission-selector"
 import { Loader2, Trash2 } from "lucide-react"
 import {
   AlertDialog,
@@ -25,19 +23,17 @@ import {
 } from "@/components/ui/alert-dialog"
 import { toast } from "sonner"
 
-interface Permission {
-    permissionId: string;
-    // Add any other properties that the permission object might have
-  }
-
-const roleFormSchema = z.object({
+const permissionFormSchema = z.object({
   name: z
     .string()
     .min(2, {
-      message: "Role name must be at least 2 characters.",
+      message: "Permission name must be at least 2 characters.",
     })
     .max(50, {
-      message: "Role name must not be longer than 50 characters.",
+      message: "Permission name must not be longer than 50 characters.",
+    })
+    .refine((value) => /^[a-z]+:[a-z]+$/.test(value), {
+      message: "Permission name must be in format 'category:action' (e.g., users:read).",
     }),
   description: z
     .string()
@@ -47,21 +43,21 @@ const roleFormSchema = z.object({
     .optional(),
 })
 
-type RoleFormValues = z.infer<typeof roleFormSchema>
+type PermissionFormValues = z.infer<typeof permissionFormSchema>
 
-interface EditRoleFormProps {
-  roleId: string
+interface EditPermissionFormProps {
+  permissionId: string
 }
 
-export function EditRoleForm({ roleId }: EditRoleFormProps) {
+export function EditPermissionForm({ permissionId }: EditPermissionFormProps) {
   const router = useRouter()
-  const [selectedPermissions, setSelectedPermissions] = useState<string[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [rolesCount, setRolesCount] = useState(0)
 
-  const form = useForm<RoleFormValues>({
-    resolver: zodResolver(roleFormSchema),
+  const form = useForm<PermissionFormValues>({
+    resolver: zodResolver(permissionFormSchema),
     defaultValues: {
       name: "",
       description: "",
@@ -69,12 +65,12 @@ export function EditRoleForm({ roleId }: EditRoleFormProps) {
   })
 
   useEffect(() => {
-    async function fetchRoleData() {
+    async function fetchPermissionData() {
       try {
-        const response = await fetch(`/api/roles/${roleId}`)
+        const response = await fetch(`/api/permissions/${permissionId}`)
 
         if (!response.ok) {
-          throw new Error("Failed to fetch role data")
+          throw new Error("Failed to fetch permission data")
         }
 
         const data = await response.json()
@@ -84,75 +80,64 @@ export function EditRoleForm({ roleId }: EditRoleFormProps) {
           description: data.description || "",
         })
 
-        // Set the selected permissions
-        const permissionIds = data.permissions.map((p: Permission) => p.permissionId)
-        setSelectedPermissions(permissionIds)
+        setRolesCount(data._count.roles)
       } catch (error) {
-        console.log("Error fetching role data:", error)
-        toast.error("Failed to load role data")
+        toast.error(error instanceof Error ? error.message : "Failed to load permission data")
       } finally {
         setIsLoading(false)
       }
     }
 
-    fetchRoleData()
-  }, [roleId, form])
+    fetchPermissionData()
+  }, [permissionId, form])
 
-  async function onSubmit(data: RoleFormValues) {
-    if (selectedPermissions.length === 0) {
-      toast.error("Please select at least one permission for this role.")
-      return
-    }
-
+  async function onSubmit(data: PermissionFormValues) {
     setIsSubmitting(true)
 
     try {
-      const response = await fetch(`/api/roles/${roleId}`, {
+      const response = await fetch(`/api/permissions/${permissionId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          ...data,
-          permissions: selectedPermissions,
-        }),
+        body: JSON.stringify(data),
       })
 
       if (!response.ok) {
         const error = await response.json()
-        throw new Error(error.message || "Failed to update role")
+        throw new Error(error.message || "Failed to update permission")
       }
 
-      toast.success(`The role "${data.name}" has been updated successfully.`)
+      toast.success(`The permission "${data.name}" has been updated successfully.`)
 
       router.push("/dashboard/permissions")
       router.refresh()
     } catch (error) {
-      toast.error( error instanceof Error ? error.message : "Failed to update role")
+      toast.error(error instanceof Error ? error.message : "Failed to update permission")
     } finally {
       setIsSubmitting(false)
     }
   }
 
-  async function handleDeleteRole() {
+  async function handleDeletePermission() {
     setIsDeleting(true)
 
     try {
-      const response = await fetch(`/api/roles/${roleId}`, {
+      const response = await fetch(`/api/permissions/${permissionId}`, {
         method: "DELETE",
       })
 
       if (!response.ok) {
         const error = await response.json()
-        throw new Error(error.message || "Failed to delete role")
+        throw new Error(error.message || "Failed to delete permission")
       }
 
-      toast.success("The role has been deleted successfully.")
+      toast.success("The permission has been deleted successfully.")
 
       router.push("/dashboard/permissions")
       router.refresh()
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to delete role")
+      toast.error(error instanceof Error ? error.message : "Failed to update role")
     } finally {
       setIsDeleting(false)
     }
@@ -177,11 +162,13 @@ export function EditRoleForm({ roleId }: EditRoleFormProps) {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Role Name</FormLabel>
+                    <FormLabel>Permission Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g. Editor, Moderator" {...field} />
+                      <Input {...field} />
                     </FormControl>
-                    <FormDescription>This is the name of the role that will be displayed to users.</FormDescription>
+                    <FormDescription>
+                      The permission name in the format <code>category:action</code> (e.g., users:read)
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -194,12 +181,12 @@ export function EditRoleForm({ roleId }: EditRoleFormProps) {
                     <FormLabel>Description</FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="Brief description of this role's responsibilities"
+                        placeholder="Brief description of what this permission allows"
                         className="resize-none"
                         {...field}
                       />
                     </FormControl>
-                    <FormDescription>Describe what this role is responsible for in the system.</FormDescription>
+                    <FormDescription>Describe what actions this permission grants in the system.</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -216,14 +203,19 @@ export function EditRoleForm({ roleId }: EditRoleFormProps) {
                 <AlertDialogHeader>
                   <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    This action cannot be undone. This will permanently delete the role and remove it from all users who
-                    have it assigned.
+                    This action cannot be undone. This will permanently delete the permission and remove it from all
+                    roles that have it assigned.
+                    {rolesCount > 0 && (
+                      <p className="mt-2 font-semibold">
+                        This permission is currently used by {rolesCount} role{rolesCount !== 1 ? "s" : ""}.
+                      </p>
+                    )}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
                   <AlertDialogAction
-                    onClick={handleDeleteRole}
+                    onClick={handleDeletePermission}
                     className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                   >
                     {isDeleting ? (
@@ -238,18 +230,6 @@ export function EditRoleForm({ roleId }: EditRoleFormProps) {
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
-          </div>
-
-          <div className="space-y-4">
-            <div>
-              <h3 className="text-lg font-medium">Permissions</h3>
-              <p className="text-sm text-muted-foreground">Manage the permissions assigned to this role.</p>
-            </div>
-
-            <PermissionSelector
-              selectedPermissions={selectedPermissions}
-              onPermissionsChange={setSelectedPermissions}
-            />
           </div>
 
           <div className="flex justify-end">
