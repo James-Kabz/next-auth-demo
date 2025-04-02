@@ -2,7 +2,7 @@ import type React from "react"
 import { Inter } from "next/font/google"
 import { ThemeProvider } from "@/components/theme-provider"
 import { AuthProvider } from "@/components/auth/auth-provider"
-
+import { Analytics } from '@vercel/analytics/next';
 import "./globals.css"
 import { Toaster } from "@/components/ui/sonner"
 
@@ -24,6 +24,7 @@ export default function RootLayout({
         <AuthProvider>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
             {children}
+            <Analytics />
             <Toaster />
           </ThemeProvider>
         </AuthProvider>
