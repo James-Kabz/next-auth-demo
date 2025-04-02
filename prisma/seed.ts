@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client"
 import bcrypt from "bcryptjs"
+import crypto from 'crypto';
 
 const prisma = new PrismaClient()
 
@@ -29,7 +30,9 @@ async function main() {
   }
 
   console.log("Created default permissions")
-
+ // Generate a secure reset token
+ const resetToken = crypto.randomBytes(32).toString("hex")
+ const resetTokenExpiry = new Date(Date.now() + 1000 * 60 * 60) 
   // Create default roles
   const adminRole = await prisma.role.upsert({
     where: { name: "admin" },
@@ -180,6 +183,8 @@ async function main() {
       email: "kabogp@example.com",
       password: adminPassword,
       roleId: adminRole.id,
+      resetToken,
+      resetTokenExpiry,
     },
   })
 
