@@ -2,17 +2,37 @@ import type React from "react"
 import { Inter } from "next/font/google"
 import { ThemeProvider } from "@/components/theme-provider"
 import { AuthProvider } from "@/components/auth/auth-provider"
-import { Analytics } from '@vercel/analytics/next';
+import { Analytics } from "@vercel/analytics/react"
 import "./globals.css"
 import { Toaster } from "@/components/ui/sonner"
 
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata = {
-  title: "Next.js Authentication",
+  title: "Events Hive",
   description: "Next.js Authentication with Next-Auth, Prisma, and shadcn/ui",
+  metadataBase: new URL('https://events-hive-app.vercel.app'),
+  icons: {
+    // icon: '/events_hive.png',
+  },
+  // Add this section for font preloading
+  openGraph: {
+    // Your OpenGraph metadata
+  },
+  // Add links array for preloading resources
+  other: {
+    'link': [
+      {
+        rel: 'preload',
+        href: '/fonts/your-custom-font.woff2',
+        as: 'font',
+        type: 'font/woff2',
+        crossOrigin: 'anonymous',
+      }
+    ],
+  },
 }
-
+ 
 export default function RootLayout({
   children,
 }: {
@@ -24,12 +44,11 @@ export default function RootLayout({
         <AuthProvider>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
             {children}
-            <Analytics />
-            <Toaster />
+            <Toaster position="top-right" />
+            <Analytics/>
           </ThemeProvider>
         </AuthProvider>
       </body>
     </html>
   )
 }
-
