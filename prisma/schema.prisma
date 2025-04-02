@@ -21,7 +21,7 @@ model User {
   sessions        Session[]
   role            Role?     @relation(fields: [roleId], references: [id])
   roleId          String?   @db.ObjectId
-  resetToken      String?   @unique
+  resetToken      String?   
   resetTokenExpiry DateTime?
   verificationToken String?
   createdAt       DateTime  @default(now())
