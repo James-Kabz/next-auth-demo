@@ -1,3 +1,9 @@
+![Screenshot 2025-04-03 at 11 49 44](https://github.com/user-attachments/assets/ac2eeb74-d0a0-4a77-96a3-a09550b7b13b)
+![Screenshot 2025-04-03 at 11 50 13](https://github.com/user-attachments/assets/638c7426-c228-4afa-b42f-fe9f2ab1b986)
+![Screenshot 2025-04-03 at 11 50 56](https://github.com/user-attachments/assets/472ddcee-043f-47ff-b369-e9de12c8f216)
+![Screenshot 2025-04-03 at 11 51 40](https://github.com/user-attachments/assets/b7868c7f-efe1-48a0-957a-c40134dbbfc0)
+
+
 Thought for 3 seconds### Next.js Authentication System
 
 A complete authentication and authorization system built with Next.js, NextAuth.js, Prisma, MySQL, and shadcn/ui components. This application provides a secure, role-based authentication system with a responsive dashboard interface.
