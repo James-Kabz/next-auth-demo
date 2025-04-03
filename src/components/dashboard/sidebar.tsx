@@ -1,5 +1,6 @@
 "use client"
 
+import { Suspense } from "react"
 import type React from "react"
 
 import Link from "next/link"
@@ -11,6 +12,7 @@ import { Sidebar, SidebarContent, SidebarMenu, SidebarMenuButton, SidebarMenuIte
 import { DashboardSidebarHeader } from "@/components/dashboard/sidebar-header"
 import { DashboardSidebarFooter } from "@/components/dashboard/sidebar-footer"
 import { useUserPermissions } from "@/hooks/use-permissions"
+import { Skeleton } from "@/components/ui/skeleton"
 
 interface Props {
   user: {
@@ -29,12 +31,27 @@ interface RouteItem {
   permission?: string
 }
 
+// Loading fallback component for sidebar menu items
+function SidebarMenuSkeleton() {
+  return (
+    <>
+      {Array(5).fill(null).map((_, i) => (
+        <SidebarMenuItem key={i}>
+          <div className="flex items-center gap-3 px-3 py-2">
+            <Skeleton className="h-5 w-5 rounded" />
+            <Skeleton className="h-4 w-24" />
+          </div>
+        </SidebarMenuItem>
+      ))}
+    </>
+  )
+}
+
+// The main sidebar menu content component that depends on permissions data
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function DashboardSidebar({ user }: Props) {
-  // console.log(user);
+function SidebarMenuContent({ user }: Props) {
   const pathname = usePathname()
-  // Use the hook to get all user permissions at once
-  const { permissions, isLoading } = useUserPermissions()
+  const { permissions } = useUserPermissions()
 
   // Define routes with their required permissions
   const routes: RouteItem[] = [
@@ -42,13 +59,13 @@ export function DashboardSidebar({ user }: Props) {
       title: "Dashboard",
       href: "/dashboard",
       icon: LayoutDashboard,
-      permission: "dashboard:access", // Basic permission that most roles should have
+      permission: "dashboard:access",
     },
     {
       title: "Analytics",
       href: "/dashboard/analytics",
       icon: BarChart3,
-      permission: "analytics:access", // More restricted permission
+      permission: "analytics:access",
     },
   ]
 
@@ -74,59 +91,68 @@ export function DashboardSidebar({ user }: Props) {
   ]
 
   // Check if user has any admin permissions
-  const hasAnyAdminPermission =
-    !isLoading && adminRoutes.some((route) => route.permission && permissions.includes(route.permission))
+  const hasAnyAdminPermission = adminRoutes.some(
+    (route) => route.permission && permissions.includes(route.permission)
+  )
 
   // Function to check if a route should be displayed
   const shouldShowRoute = (route: RouteItem) => {
     if (!route.permission) return true
-    if (isLoading) return false
     return permissions.includes(route.permission)
   }
 
+  return (
+    <>
+      {/* Main routes */}
+      {routes.map((route) =>
+        shouldShowRoute(route) ? (
+          <SidebarMenuItem key={route.href || route.title}>
+            <SidebarMenuButton asChild isActive={pathname === route.href} tooltip={route.title}>
+              <Link href={route.href || "#"}>
+                <route.icon className="h-5 w-5" />
+                <span>{route.title}</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        ) : null
+      )}
+
+      {/* Admin section header - only show if user has any admin permissions */}
+      {hasAnyAdminPermission && (
+        <div className="mt-6 mb-2">
+          <h4 className="px-3 text-xs font-semibold text-muted-foreground">Admin</h4>
+        </div>
+      )}
+
+      {/* Admin routes */}
+      {adminRoutes.map((route) =>
+        shouldShowRoute(route) ? (
+          <SidebarMenuItem key={route.href || route.title}>
+            <SidebarMenuButton asChild isActive={pathname === route.href} tooltip={route.title}>
+              <Link href={route.href || "#"}>
+                <route.icon className="h-5 w-5" />
+                <span>{route.title}</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        ) : null
+      )}
+    </>
+  )
+}
+
+export function DashboardSidebar({ user }: Props) {
   return (
     <Sidebar collapsible="icon">
       <DashboardSidebarHeader />
       <SidebarContent>
         <SidebarMenu>
-          {/* Main routes */}
-          {routes.map((route) =>
-            shouldShowRoute(route) ? (
-              <SidebarMenuItem key={route.href || route.title}>
-                <SidebarMenuButton asChild isActive={pathname === route.href} tooltip={route.title}>
-                  <Link href={route.href || "#"}>
-                    <route.icon className="h-5 w-5" />
-                    <span>{route.title}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ) : null,
-          )}
-
-          {/* Admin section header - only show if user has any admin permissions */}
-          {hasAnyAdminPermission && (
-            <div className="mt-6 mb-2">
-              <h4 className="px-3 text-xs font-semibold text-muted-foreground">Admin</h4>
-            </div>
-          )}
-
-          {/* Admin routes */}
-          {adminRoutes.map((route) =>
-            shouldShowRoute(route) ? (
-              <SidebarMenuItem key={route.href || route.title}>
-                <SidebarMenuButton asChild isActive={pathname === route.href} tooltip={route.title}>
-                  <Link href={route.href || "#"}>
-                    <route.icon className="h-5 w-5" />
-                    <span>{route.title}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ) : null,
-          )}
+          <Suspense fallback={<SidebarMenuSkeleton />}>
+            <SidebarMenuContent user={user} />
+          </Suspense>
         </SidebarMenu>
       </SidebarContent>
       <DashboardSidebarFooter />
     </Sidebar>
   )
 }
-
