@@ -1,7 +1,8 @@
-import type { Config } from "tailwindcss"
+import tailwindcssAnimate  from 'tailwindcss-animate';
+import type { Config } from "tailwindcss";
 
-const config = {
-  // darkMode: ["class"],
+const config: Config = {
+  darkMode: "class",
   content: [
     "./pages/**/*.{ts,tsx}",
     "./components/**/*.{ts,tsx}",
@@ -11,23 +12,23 @@ const config = {
   ],
   prefix: "",
   theme: {
-    // container: {
-    //   center: true,
-    //   padding: {
-    //     DEFAULT: "1rem",
-    //     sm: "1.5rem",
-    //     lg: "2rem",
-    //   },
-    //   screens: {
-    //     sm: "640px",
-    //     md: "768px",
-    //     lg: "1024px",
-    //     xl: "1280px",
-    //     "2xl": "1536px",
-    //     "3xl": "1920px",
-    //     "4xl": "2560px",
-    //   },
-    // },
+    container: {
+      center: true,
+      padding: {
+        DEFAULT: "1rem",
+        sm: "1.5rem",
+        lg: "2rem",
+      },
+      screens: {
+        sm: "640px",
+        md: "768px",
+        lg: "1024px",
+        xl: "1280px",
+        "2xl": "1536px",
+        "3xl": "1920px",
+        "4xl": "2560px",
+      },
+    },
     extend: {
       colors: {
         border: "hsl(var(--border))",
@@ -88,15 +89,49 @@ const config = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        pulse: {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0.5" },
+        },
+        shimmer: {
+          "0%": { backgroundPosition: "-200% 0" },
+          "100%": { backgroundPosition: "200% 0" },
+        },
+        "fade-in": {
+          from: { opacity: "0" },
+          to: { opacity: "1" },
+        },
+        "slide-in-from-bottom": {
+          from: { transform: "translateY(10px)", opacity: "0" },
+          to: { transform: "translateY(0)", opacity: "1" },
+        },
+        bounce: {
+          "0%, 100%": {
+            transform: "translateY(0)",
+            animationTimingFunction: "cubic-bezier(0.8, 0, 1, 1)",
+          },
+          "50%": {
+            transform: "translateY(-25%)",
+            animationTimingFunction: "cubic-bezier(0, 0, 0.2, 1)",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        pulse: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+        shimmer: "shimmer 2s linear infinite",
+        "fade-in": "fade-in 0.3s ease-out",
+        "slide-in-from-bottom": "slide-in-from-bottom 0.3s ease-out",
+        bounce: "bounce 1s infinite",
+      },
+      backgroundImage: {
+        "skeleton-shimmer":
+          "linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.06) 50%, transparent 100%)",
       },
     },
   },
-//   plugins: [require("tailwindcss-animate"],
-} satisfies Config
+  plugins: [tailwindcssAnimate],
+};
 
-export default config
-
+export default config;

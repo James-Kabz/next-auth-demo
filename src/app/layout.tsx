@@ -5,6 +5,8 @@ import { AuthProvider } from "@/components/auth/auth-provider"
 import { Analytics } from "@vercel/analytics/react"
 import "./globals.css"
 import { Toaster } from "@/components/ui/sonner"
+import RootLoading from "./loading"
+import { Suspense } from "react"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -43,7 +45,9 @@ export default function RootLayout({
       <body className={inter.className}>
         <AuthProvider>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-            {children}
+            <Suspense fallback={<RootLoading />}>
+                          {children}
+            </Suspense>
             <Toaster position="top-right" />
             <Analytics/>
           </ThemeProvider>
